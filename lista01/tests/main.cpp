@@ -15,7 +15,7 @@ int main()
 
     // Print the polynomial
     std::cout << "Polynomial: ";
-    polynomial.print(); // Expected Output: 3x^4 - 5x^3 + 2x^2 + x - 2
+    polynomial.showALL(); // Expected Output: 3x^4 - 5x^3 + 2x^2 + x - 2
 
     // Change a node's coefficient
     // Update degree 2 coefficient to 4.0f (from 2.0f to 6.0f)
@@ -23,7 +23,7 @@ int main()
 
     // Print the updated polynomial
     std::cout << "After updating degree 2: ";
-    polynomial.print(); // Expected Output: 3x^4 - 5x^3 + 6x^2 + x - 2
+    polynomial.showALL(); // Expected Output: 3x^4 - 5x^3 + 6x^2 + x - 2
 
     // Remove a node
     // Remove degree 3 term (-5x^3)
@@ -31,7 +31,7 @@ int main()
 
     // Print the polynomial after removal
     std::cout << "After removing degree 3: ";
-    polynomial.print(); // Expected Output: 3x^4 + 6x^2 + x - 2
+    polynomial.showALL(); // Expected Output: 3x^4 + 6x^2 + x - 2
 
     return 0;
 }

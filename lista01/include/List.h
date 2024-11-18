@@ -9,7 +9,6 @@
 class List
 {
 private:
-    // Nested Node class
     class Node
     {
     private:
@@ -56,7 +55,7 @@ public:
     void insert(float coefficient, int degree);
     void removeDegree(int degree);
     void deleteNode(Node* node);
-    void print() const;
+    void showALL() const;
 
 private:
     // Internal method to search for a node by degree

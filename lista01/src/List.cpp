@@ -239,8 +239,8 @@ void List::deleteNode(List::Node* node)
     }
 }
 
-// Print the polynomial
-void List::print() const
+// showALL the polynomial
+void List::showALL() const
 {
     if (isEmpty())
     {
