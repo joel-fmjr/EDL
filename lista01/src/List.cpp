@@ -2,23 +2,6 @@
 #include <cmath>
 #include <stdexcept>
 
-// Implementation of Node class methods
-
-// Constructor
-List::Node::Node(float coeff, int deg)
-    : coefficient(coeff), degree(deg), next(nullptr) {}
-
-// Getters
-float List::Node::getCoefficient() const { return coefficient; }
-int List::Node::getDegree() const { return degree; }
-List::Node* List::Node::getNext() const { return next; }
-
-// Setters
-void List::Node::setCoefficient(float coeff) { coefficient = coeff; }
-void List::Node::setDegree(int deg) { degree = deg; }
-void List::Node::setNext(Node* nxt) { next = nxt; }
-
-// Implementation of List class methods
 
 // Helper method to deep copy nodes
 void List::copyFrom(const List& other)
@@ -91,8 +74,16 @@ List::~List()
     clear();
 }
 
+// Internal method to get the next node
+Node* List::getNext(Node* node) const
+{
+    if (node == nullptr)
+        return nullptr;
+    return node->next;
+}
+
 // Internal method to search for a node by degree
-List::Node* List::searchDegree(int degree) const
+Node* List::searchDegree(int degree) const
 {
     Node* current = head;
     while (current != nullptr)
@@ -105,9 +96,17 @@ List::Node* List::searchDegree(int degree) const
 }
 
 // Get the coefficient and degree as a tuple for a given degree
-std::tuple<float, int> List::getValues(int degree) const
+std::tuple<float, int> List::getValuesDegree(int degree) const
 {
     Node* node = searchDegree(degree);
+    if (node == nullptr)
+        return {0.0f, 0};
+    return {node->coefficient, node->degree};
+}
+
+// Get the coefficient and degree as a tuple for a given node
+std::tuple<float, int> List::getValues(Node *node) const
+{
     if (node == nullptr)
         return {0.0f, 0};
     return {node->coefficient, node->degree};
@@ -148,6 +147,17 @@ bool List::isEmpty() const
 bool List::exists(int degree) const
 {
     return searchDegree(degree) != nullptr;
+}
+
+// Show all nodes in the list
+void List::showAll() const
+{
+    Node* current = head;
+    while (current != nullptr)
+    {
+        std::cout << "Degree: " << current->degree << ", Coefficient: " << current->coefficient << std::endl;
+        current = current->next;
+    }
 }
 
 // Insert a term into the list in sorted order
@@ -226,16 +236,6 @@ void List::removeDegree(int degree)
             tail = current;
         delete temp;
         listSize--;
-    }
-}
-
-// Delete a node from the list (same as removeDegree)
-void List::deleteNode(List::Node* node)
-{
-    // Delegate to removeDegree based on node's degree
-    if (node != nullptr)
-    {
-        removeDegree(node->degree);
     }
 }
 

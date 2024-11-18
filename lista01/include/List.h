@@ -1,37 +1,13 @@
-// include/List.h
-
 #ifndef LIST_H
 #define LIST_H
 
-#include <iostream>
+#include "Node.h"
 #include <tuple>
+#include <iostream>
 
 class List
 {
 private:
-    // Nested Node class
-    class Node
-    {
-    private:
-        float coefficient;
-        int degree;
-        Node* next;
-
-    public:
-        Node(float coeff, int deg);
-        // Getters
-        float getCoefficient() const;
-        int getDegree() const;
-        Node* getNext() const;
-        // Setters
-        void setCoefficient(float coeff);
-        void setDegree(int deg);
-        void setNext(Node* nxt);
-
-        // Friend class declaration
-        friend class List;
-    };
-
     Node* head;
     Node* tail;
     int listSize;
@@ -39,6 +15,7 @@ private:
     // Helper methods
     void copyFrom(const List& other);
     void clear();
+    Node* searchDegree(int degree) const;
 
 public:
     // Constructors and Destructor
@@ -48,19 +25,17 @@ public:
     ~List();
 
     // Public interface
-    std::tuple<float, int> getValues(int degree) const;
+    std::tuple<float, int> getValues(Node *node) const;
+    std::tuple<float, int> getValuesDegree(int degree) const;
     void changeNode(float coefficient, int degree);
+    Node* getNext(Node* node) const;
     int size() const;
     bool isEmpty() const;
     bool exists(int degree) const;
     void insert(float coefficient, int degree);
     void removeDegree(int degree);
-    void deleteNode(Node* node);
+    void showAll() const;
     void print() const;
-
-private:
-    // Internal method to search for a node by degree
-    Node* searchDegree(int degree) const;
 };
 
 #endif // LIST_H
