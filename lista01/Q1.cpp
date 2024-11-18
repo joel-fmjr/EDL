@@ -1,252 +1,358 @@
 #include <iostream>
 #include <tuple>
 
-using namespace std;
+class List; // Forward declaration
 
 class Node
 {
-    private:
-        float coefficient;
-        int degree;
-        Node *next;
+private:
+    float coefficient;
+    int degree;
+    Node* next;
 
-    public:
-        Node(float coefficient, int degree)
-        {
+public:
+    Node(float coeff, int deg)
+        : coefficient(coeff), degree(deg), next(nullptr) {}
 
-            this->coefficient = coefficient;
-            this->degree = degree;
-            this->next = nullptr;
-        }
-    
-        friend class List;
+    // Getters
+    float getCoefficient() const { return coefficient; }
+    int getDegree() const { return degree; }
+    Node* getNext() const { return next; }
+
+    friend class List;
 };
 
 class List
 {
+private:
+    Node* head;
+    Node* tail;
+    int listSize;
 
-    public:
-        Node* head = nullptr;
-        Node* tail = nullptr;
-
-        List()
+    // Helper method to deep copy nodes
+    void copyFrom(const List& other)
+    {
+        if (other.head == nullptr)
         {
             head = tail = nullptr;
+            listSize = 0;
+            return;
         }
 
-        ~List()
+        // Copy the head node
+        head = new Node(other.head->coefficient, other.head->degree);
+        listSize = 1;
+        Node* currentOther = other.head->next;
+        Node* currentThis = head;
+
+        // Copy the rest of the nodes
+        while (currentOther != nullptr)
         {
-            Node *current = head;
-            while (current != nullptr)
-            {
-                Node *next = current->next;
-                delete current;
-                current = next;
-            }
-            head = nullptr;
+            Node* newNode = new Node(currentOther->coefficient, currentOther->degree);
+            currentThis->next = newNode;
+            currentThis = newNode;
+            currentOther = currentOther->next;
+            listSize++;
         }
 
-        Node *getNext(Node *node)
-        {
-            return node->next;
-        }
+        tail = currentThis;
+    }
 
-        tuple<float, int> getValues(Node *node)
+    // Helper method to delete all nodes
+    void clear()
+    {
+        Node* current = head;
+        while (current != nullptr)
         {
-            return make_tuple(node->coefficient, node->degree);
+            Node* nextNode = current->next;
+            delete current;
+            current = nextNode;
         }
+        head = tail = nullptr;
+        listSize = 0;
+    }
 
-        void changeNode(Node *node, float coefficient, int degree)
-        {
-            if (node->degree != degree)
-            {
-                deleteNode(node);
-                insert(coefficient, degree);
-                return;
-            }
-            node->coefficient = coefficient;
-        }
+public:
+    // Constructor
+    List()
+        : head(nullptr), tail(nullptr), listSize(0) {}
 
-        int size()
-        {
-            int count = 0;
-            Node *current = head;
-            while (current->next != nullptr)
-            {
-                count++;
-                current = current->next;
-            }
-            return count;
-        }
+    // Copy Constructor
+    List(const List& other)
+        : head(nullptr), tail(nullptr), listSize(0)
+    {
+        copyFrom(other);
+    }
 
-        bool isEmpty()
-        {
-            return head == nullptr;
-        }
+    // Copy Assignment Operator
+    List& operator=(const List& other)
+    {
+        if (this == &other)
+            return *this;
 
-        bool exists(Node *node)
-        {
-            Node *current = head;
-            while (current != nullptr)
-            {
-                if (current == node)
-                {
-                    return true;
-                }
-                current = current->next;
-            }
-            return false;
-        }
+        clear();
+        copyFrom(other);
+        return *this;
+    }
 
-        void insert(float coefficient, int degree)
-        {
-            sortedInsertByDegree(coefficient, degree);
-        }
+    // Destructor
+    ~List()
+    {
+        clear();
+    }
 
-        void remove(Node *node)
-        {
-            if (isEmpty())
-            {
-                return;
-            }
-            if (head == node)
-            {
-                head = head->next;
-                return;
-            }
-            Node *current = head;
-            while (current->next != nullptr)
-            {
-                if (current->next == node)
-                {
-                    current->next = node->next;
-                    return;
-                }
-                current = current->next;
-            }
-        }
-
-        void deleteNode(Node *node)
-        {
-            if (isEmpty())
-            {
-                return;
-            }
-            if (head == node)
-            {
-                head = head->next;
-                delete node;
-                return;
-            }
-            Node *current = head;
-            while (current->next != nullptr)
-            {
-                if (current->next == node)
-                {
-                    current->next = node->next;
-                    delete node;
-                    return;
-                }
-                current = current->next;
-            }
-        }
-
-        Node *searchDegree(int degree)
-        {
-            Node *current = head;
-            while (current != nullptr)
-            {
-                if (current->degree == degree)
-                {
-                    return current;
-                }
-                current = current->next;
-            }
+    // Get the next node
+    Node* getNext(const Node* node) const
+    {
+        if (node == nullptr)
             return nullptr;
+        return node->next;
+    }
+
+    // Get the coefficient and degree as a tuple
+    std::tuple<float, int> getValues(const Node* node) const
+    {
+        if (node == nullptr)
+            return {0.0f, 0};
+        return {node->coefficient, node->degree};
+    }
+
+    // Change node's coefficient and degree
+    void changeNode(Node* node, float coefficient, int degree)
+    {
+        if (node == nullptr)
+            return;
+
+        if (node->degree != degree)
+        {
+            // Remove the node and re-insert with new degree
+            remove(node);
+            insert(coefficient, degree);
         }
-
-        void p()
+        else
         {
-            Node *node = head;
-            while (node != nullptr)
+            node->coefficient = coefficient;
+            if (node->coefficient == 0.0f)
             {
-                if (node->degree == 0)
-                {
-                    std::cout << node->coefficient << " ";
-                }
-                else if (node->degree == 1)
-                {
-                    std::cout << node->coefficient << "x ";
-                }
-                else
-                {
-                    std::cout << node->coefficient << "x^" << node->degree << " ";
-                }
-                node = node->next;
+                remove(node);
             }
-        };
-    
-    private:
+        }
+    }
 
-        bool updateCoefficientOnExistingDegree(float coefficient, int degree)
+    // Get the size of the list
+    int size() const
+    {
+        return listSize;
+    }
+
+    // Check if the list is empty
+    bool isEmpty() const
+    {
+        return head == nullptr;
+    }
+
+    // Check if a node exists in the list
+    bool exists(const Node* node) const
+    {
+        Node* current = head;
+        while (current != nullptr)
         {
-            Node *existingDegree = searchDegree(degree);
-            if (existingDegree != nullptr)
-            {
-                existingDegree->coefficient += coefficient;
+            if (current == node)
                 return true;
-            }
-            return false;
+            current = current->next;
         }
-        void sortedInsertByDegree(float coefficient, int degree)
+        return false;
+    }
+
+    // Insert a term into the list in sorted order
+    void insert(float coefficient, int degree)
+    {
+        if (coefficient == 0.0f)
+            return; // No need to store zero coefficient
+
+        // Check if degree already exists and update coefficient if it does
+        Node* existingNode = searchDegree(degree);
+        if (existingNode != nullptr)
         {
-            if (updateCoefficientOnExistingDegree(coefficient, degree))
+            existingNode->coefficient += coefficient;
+            if (existingNode->coefficient == 0.0f)
             {
-                return;
+                remove(existingNode);
+            }
+            return;
+        }
+
+        // Create a new node
+        Node* newNode = new Node(coefficient, degree);
+
+        // Insert in descending order of degrees
+        if (isEmpty() || head->degree < degree)
+        {
+            newNode->next = head;
+            head = newNode;
+            if (tail == nullptr)
+                tail = newNode;
+        }
+        else
+        {
+            Node* current = head;
+            while (current->next != nullptr && current->next->degree > degree)
+            {
+                current = current->next;
+            }
+            newNode->next = current->next;
+            current->next = newNode;
+            if (newNode->next == nullptr)
+                tail = newNode;
+        }
+
+        listSize++;
+    }
+
+    // Remove a node from the list
+    void remove(Node* node)
+    {
+        if (node == nullptr || isEmpty())
+            return;
+
+        if (head == node)
+        {
+            head = head->next;
+            delete node;
+            if (head == nullptr)
+                tail = nullptr;
+            listSize--;
+            return;
+        }
+
+        Node* current = head;
+        while (current->next != nullptr && current->next != node)
+        {
+            current = current->next;
+        }
+
+        if (current->next == node)
+        {
+            current->next = node->next;
+            if (node == tail)
+                tail = current;
+            delete node;
+            listSize--;
+        }
+    }
+
+    // Delete a node from the list (same as remove)
+    void deleteNode(Node* node)
+    {
+        remove(node);
+    }
+
+    // Search for a node by degree
+    Node* searchDegree(int degree) const
+    {
+        Node* current = head;
+        while (current != nullptr)
+        {
+            if (current->degree == degree)
+                return current;
+            current = current->next;
+        }
+        return nullptr;
+    }
+
+    // Print the polynomial
+    void print() const
+    {
+        if (isEmpty())
+        {
+            std::cout << "0" << std::endl;
+            return;
+        }
+
+        Node* node = head;
+        bool first = true;
+        while (node != nullptr)
+        {
+            float coeff = node->coefficient;
+            int deg = node->degree;
+
+            if (coeff == 0.0f)
+            {
+                node = node->next;
+                continue;
             }
 
-            Node *newNode = new Node(coefficient, degree);
-            if (isEmpty())
+            // Handle sign
+            if (coeff > 0 && !first)
+                std::cout << " + ";
+            else if (coeff < 0)
+                std::cout << " - ";
+
+            // Handle coefficient
+            if (deg == 0 || std::abs(coeff) != 1.0f)
+                std::cout << std::abs(coeff);
+
+            // Handle variable and degree
+            if (deg > 0)
             {
-                head = tail = newNode;
+                std::cout << "x";
+                if (deg > 1)
+                    std::cout << "^" << deg;
             }
-            else if (head->degree <= degree)
-            {
-                newNode->next = head;
-                head = newNode;
-            }
-            else
-            {
-                Node *current = head;
-                while (current->next != nullptr && current->next->degree > degree)
-                {
-                    current = current->next;
-                }
-                newNode->next = current->next;
-                current->next = newNode;
-            }
+
+            first = false;
+            node = node->next;
         }
+        std::cout << std::endl;
+    }
 };
+
 
 int main()
 {
-    List list;
-    list.insert(3, 2);
-    list.insert(4, 1);
-    list.insert(2, 3);
-    list.insert(5, 0);
+    List polynomial;
 
-    list.p();
-    cout << endl;
+    // Insert terms
+    polynomial.insert(3.0f, 4);  // 3x^4
+    polynomial.insert(2.0f, 2);  // +2x^2
+    polynomial.insert(-5.0f, 3); // -5x^3
+    polynomial.insert(1.0f, 1);  // +x
+    polynomial.insert(-2.0f, 0); // -2
+
+    // Print the polynomial
+    polynomial.print(); // Expected Output: 3x^4 - 5x^3 + 2x^2 + x - 2
+
+    // Change a node's coefficient
+    Node* node = polynomial.searchDegree(2);
+    if (node)
+    {
+        polynomial.changeNode(node, 4.0f, 2); // Update 2x^2 to 4x^2
+    }
+
+    // Print the updated polynomial
+    polynomial.print(); // Expected Output: 3x^4 - 5x^3 + 4x^2 + x - 2
 
     float coefficient;
     int degree;
-    Node *node = list.getNext(list.head);
-    tie(coefficient, degree) = list.getValues(node);
-    cout << coefficient << " " << degree << endl;
-    list.changeNode(node, 10, 2);
-    list.insert(5.2, 2);
-    list.p();
+
+    // Remove a node
+    node = polynomial.searchDegree(3);
+    if (node)
+    {
+        
+        std::tie(coefficient, degree) = polynomial.getValues(node);
+        std::cout << "Removing " << coefficient << "x^" << degree << std::endl;
+        polynomial.remove(node);
+    }
+
+    // Print the polynomial after removal
+    polynomial.print(); // Expected Output: 3x^4 + 4x^2 + x - 2
+    node = polynomial.searchDegree(4);
+    std::tie(coefficient, degree) = polynomial.getValues(node);
+    std::cout << node->getCoefficient() << "x^" << node->getCoefficient() << std::endl;
+    polynomial.insert(1.0f, 4); // Insert a zero coefficient term
+    std::cout << node->getCoefficient() << "x^" << node->getCoefficient() << std::endl;
+    polynomial.print(); // Expected Output: 4x^2 + x - 2
 
     return 0;
 }
