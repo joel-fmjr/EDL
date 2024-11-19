@@ -5,7 +5,8 @@
 #include <map>
 
 // Function to convert a number to its superscript string
-std::string toSuperscript(int number) {
+std::string toSuperscript(int number)
+{
     std::map<char, std::string> superscripts = {
         {0, "⁰"},
         {1, "¹"},
@@ -301,7 +302,7 @@ void List::printTerm(const Node *node, bool &first, float x) const
 }
 
 // Print the polynomial
-void List::showALL() const
+void List::showALL(bool endl) const
 {
     if (isEmpty())
     {
@@ -316,7 +317,10 @@ void List::showALL() const
         printTerm(node, first);
         node = node->next;
     }
-    std::cout << std::endl;
+    if (endl)
+    {
+        std::cout << std::endl;
+    }
 }
 
 // evaluate the polynomial at a given point x

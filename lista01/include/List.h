@@ -37,7 +37,7 @@ public:
     void insert(float coefficient, int degree);
     void removeDegree(int degree);
     void remove(Node *node);
-    void showALL() const;
+    void showALL(bool endl=true) const;
     int getDegree() const;
     Node *getHead() const;
     void printTerm(const Node *node, bool &first, float x = NAN) const;
