@@ -171,7 +171,6 @@ void List::insert(float coefficient, int degree)
         return;
     }
 
-    // Create a new node
     Node *newNode = new Node(coefficient, degree);
 
     // Insert in descending order of degrees

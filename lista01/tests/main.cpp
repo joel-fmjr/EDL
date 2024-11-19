@@ -1,67 +1,139 @@
-#include "List.h"
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include "List.h"
 
-int main()
+void processLine(char command, List poly1, List poly2)
 {
-    List polynomial;
+    // std::cout << "Command: " << command << std::endl;
+    if (command == '+')
+    { // Soma dos dois polinômios
+        List result = poly1 + poly2;
+        std::cout << "Resultado da soma dos polinômios: ";
+        result.showALL();
+        poly1 = List();
+        poly2 = List();
+    }
+    else if (command == '-')
+    { // Grau do polinômio
+        List result = poly1 - poly2;
+        std::cout << "Resultado da subtração dos polinômios: ";
+        result.showALL();
+        poly1 = List();
+    }
+    else if (command == 'g' || command == 'G')
+    { // Grau do polinômio
+        std::cout << "Grau do polinômio 1: " << poly1.getDegree() << std::endl;
+    }
+    else if (command == 'p' || command == 'P')
+    { // Exibir polinômio
+        std::cout << "Polinômio 1: ";
+        poly1.showALL();
+        poly1 = List();
+    }
+    // else if (command == 'a' || command == 'A')
+    // { // Avaliar polinômio
+    //     float x;
+    //     iss >> x;
+    //     if (firstPoly)
+    //     {
+    //         std::cout << "Resultado de p(" << x << ") para o polinômio 1: ";
+    //         poly1.evaluate(x);
+    //     }
+    //     else
+    //     {
+    //         std::cout << "Resultado de p(" << x << ") para o polinômio 2: ";
+    //         poly2.evaluate(x);
+    //     }
+    // }
+}
 
-    // Insert terms
-    polynomial.insert(-5.0f, 1); // -5x
-    polynomial.insert(3.0f, 2);  // +3x^2
-    polynomial.insert(7.0f, 0);  // +7
+void populatePolynomial(const std::string &line, List &poly)
+{
+    std::istringstream iss(line);
+    float coefficient;
+    int degree;
+    while (iss >> coefficient >> degree)
+    {
+        poly.insert(coefficient, degree);
+    }
+    poly.showALL();
+}
 
-    List otherPolynomial;
+void getCommand(const std::string &line, char *command, char *previousCommand)
+{
 
-    // Insert terms
-    otherPolynomial.insert(-4.0f, 0); // -4
-    otherPolynomial.insert(2.0f, 2);  // +2x^2
-    otherPolynomial.insert(6.0f, 1);  // +6x
+    if (line.length() > 1){
+        *command = 'i';
+        return;
+    }
 
-    // Print the polynomial
-    polynomial.showALL(); // Expected Output: 3x^2 - 5x + 7
+    std::istringstream iss(line);
+    if (*command != '0')
+    {
+        *previousCommand = *command;
+    }
+    *command = line[0];
+    std::cout << "Command: " << *command << std::endl;
 
-    // Print the other polynomial
-    otherPolynomial.showALL(); // Expected Output: 2x^2 + 6x - 4
+    if (*command != '+' && *command != 'g' && *command != 'e' && *command != 'a')
+    {
+        *command = 'i';
+    }
+}
 
-    // Get the size of the polynomial
-    std::cout << "Size of the polynomial: " << polynomial.getNumTerms() << std::endl; // Expected Output: 4
+void processFile(const std::string &filePath)
+{
+    std::ifstream inputFile(filePath);
+    if (!inputFile.is_open())
+    {
+        std::cerr << "Erro ao abrir o arquivo: " << filePath << std::endl;
+        return;
+    }
 
-    // Get the degree of the polynomial
-    std::cout << "Degree of the polynomial: " << polynomial.getDegree() << std::endl; // Expected Output: 4
+    std::string line;
+    List poly1, poly2, result;
+    char previousCommand = '0';
+    char command = '0';
 
-    // sum of polynomials
-    List sum = polynomial + otherPolynomial;
-    sum.showALL(); // Expected Output: 5x^2 +x + 3
+    while (std::getline(inputFile, line))
+    {
 
-    // difference of polynomials
-    List sub = polynomial - otherPolynomial;
-    sub.showALL(); // Expected Output: x^2 - 11x + 11
+        if (line.empty())
+        {
+            continue;
+        }
+        getCommand(line, &command, &previousCommand);
+        // std::cout << "Command: " << command << std::endl;
+        if (command == 'i')
+        {
+            // std::cout << "entrou no if" << std::endl;
+            poly1.isEmpty() ? populatePolynomial(line, poly1) : populatePolynomial(line, poly2);
+        }
 
-    // product of polynomials
-    List prod = polynomial * otherPolynomial;
-    prod.showALL(); // Expected Output: 6x^4 + 8x^3 - 28x^2 + 62x - 28
+        // if (!poly1.isEmpty() && !poly2.isEmpty())
+        // {
+        //     result = poly1 + poly2;
+        //     result.showALL();
+        // }
 
-    List evaluation;
-    evaluation.insert(-2.0f, 2);
-    evaluation.insert(4.0f, 1);
+        processLine(command, poly1, poly2);
+    }
 
-    // evaluate the polynomial
-    evaluation.evaluate(3.0f); // Expected Output: -6
+    inputFile.close();
+}
 
-    List polynomial2;
-    polynomial2.insert(2.0f, 2);
-    polynomial2.insert(-4.0f, 1);
-    polynomial2.insert(1.0f, 0);
+int main(int argc, char *argv[])
+{
+    if (argc < 2)
+    {
+        std::cerr << "Uso: " << argv[0] << " <caminho_para_o_arquivo>" << std::endl;
+        return 1;
+    }
 
-    List polynomial3;
-    polynomial3.insert(-3.0f, 4);
-    polynomial3.insert(5.0f, 2);
-    polynomial3.insert(4.0f, 1);
-    polynomial3.insert(-10.0f, 0);
-
-    // sum of polynomials
-    List sum2 = polynomial2 + polynomial3;
-    sum2.showALL(); // Expected Output: -3x^4 + 7x^2 - 3x - 9
+    std::string filePath = argv[1];
+    processFile(filePath);
 
     return 0;
 }
