@@ -6,7 +6,7 @@ class Node
 private:
     float coefficient;
     int degree;
-    Node* next;
+    Node *next;
 
 public:
     // Constructor
@@ -15,12 +15,7 @@ public:
     // Getters
     float getCoefficient() const;
     int getDegree() const;
-    Node* getNext() const;
-
-    // Setters
-    void setCoefficient(float coeff);
-    void setDegree(int deg);
-    void setNext(Node* nxt);
+    Node *getNext() const;
 
     friend class List;
 };

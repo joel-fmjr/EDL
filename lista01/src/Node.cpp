@@ -7,9 +7,4 @@ Node::Node(float coeff, int deg)
 // Getters
 float Node::getCoefficient() const { return coefficient; }
 int Node::getDegree() const { return degree; }
-Node* Node::getNext() const { return next; }
-
-// Setters
-void Node::setCoefficient(float coeff) { coefficient = coeff; }
-void Node::setDegree(int deg) { degree = deg; }
-void Node::setNext(Node* nxt) { next = nxt; }
+Node *Node::getNext() const { return next; }
