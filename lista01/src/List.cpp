@@ -185,6 +185,12 @@ void List::insert(float coefficient, int degree)
 {
     if (coefficient == 0.0f)
         return; // No need to store zero coefficient
+    
+    if (degree < 0)
+    {
+        std::cerr << "Degree must be a non-negative integer.\n";
+        exit(1);
+    }
 
     // Check if degree already exists and update coefficient if it does
     Node *existingNode = searchDegree(degree);
