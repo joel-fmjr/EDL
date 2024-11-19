@@ -1,4 +1,30 @@
 #include "List.h"
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <map>
+
+// Function to convert a number to its superscript string
+std::string toSuperscript(int number) {
+    std::map<char, std::string> superscripts = {
+        {0, "⁰"},
+        {1, "¹"},
+        {2, "²"},
+        {3, "³"},
+        {4, "⁴"},
+        {5, "⁵"},
+        {6, "⁶"},
+        {7, "⁷"},
+        {8, "⁸"},
+        {9, "⁹"},
+    };
+
+    std::string result = "";
+
+    result += superscripts[number];
+
+    return result;
+}
 
 // Helper method to deep copy nodes
 void List::copyFrom(const List &other)
@@ -268,7 +294,7 @@ void List::printTerm(const Node *node, bool &first, float x) const
         else
             std::cout << " x (" << x << ")";
         if (deg > 1)
-            std::cout << "^" << deg;
+            std::cout << toSuperscript(deg);
     }
 
     first = false;

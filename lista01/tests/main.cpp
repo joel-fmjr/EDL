@@ -38,6 +38,7 @@ void processLine(char command, List &poly1, List &poly2, float x = NAN)
     }
     else if (command == 'p' || command == 'P')
     { // Exibir polinômio
+        std::cout << "Polinômio: ";
         poly1.showALL();
         poly1 = List();
     }
@@ -55,7 +56,7 @@ void processLine(char command, List &poly1, List &poly2, float x = NAN)
 void populatePolynomial(const std::string &line, List &poly)
 {
     if (line.length() <= 1) {
-        std::cout << "Invalid polynomial" << std::endl;
+        std::cout << "Polinômio inválido." << std::endl;
         exit(1);
     }
     std::istringstream iss(line);
@@ -148,7 +149,18 @@ void processFile(const std::string &filePath)
         }
         else if (command == 'a' || command == 'A')
         {
-            float x = std::stof(lines[++count]);
+            float x = NAN;
+            try
+            {
+                x = std::stof(lines[++count]);
+            }
+            catch(const std::exception& e)
+            {
+                std::cerr << "Erro ao converter valor de x" << std::endl;
+                return;
+            }
+            
+            
             populatePolynomial(lines[++count], poly1);
             processLine(command, poly1, poly2, x);
         }
