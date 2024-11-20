@@ -23,7 +23,7 @@ std::vector<std::string> trimFileLines(const std::string &filename)
     std::ifstream inputFile(filename);
     if (!inputFile)
     {
-        std::cerr << "Error: Unable to open file '" << filename << "' for reading." << std::endl;
+        std::cerr << "Erro: Não foi possível abrir o arquivo '" << filename << "' para leitura." << std::endl;
         exit(1);
     }
 
@@ -50,8 +50,7 @@ void getCommand(const std::string &line, char *command)
     }
     else
     {
-        // Handle invalid command length
-        *command = '\0';
+        *command = '\0'; // Comando inválido
     }
 }
 
@@ -60,7 +59,7 @@ void populatePolynomial(const std::string &line, List &poly)
 {
     if (line.empty())
     {
-        std::cerr << "Polinômio inválido." << std::endl;
+        std::cerr << "Erro: Linha de polinômio inválida." << std::endl;
         exit(1);
     }
 
@@ -128,7 +127,7 @@ void processLine(char command, List &poly1, List &poly2, float x)
             }
             else
             {
-                std::cerr << "Valor de x inválido para avaliação." << std::endl;
+                std::cerr << "Erro: Valor de x inválido para avaliação." << std::endl;
             }
             poly1 = List();
             break;
@@ -142,7 +141,7 @@ void processLine(char command, List &poly1, List &poly2, float x)
             break;
         }
         default:
-            std::cout << "Comando inválido" << std::endl;
+            std::cout << "Erro: Comando inválido." << std::endl;
     }
 }
 
@@ -161,7 +160,7 @@ void processFile(const std::string &filePath)
 
         if (command == '\0')
         {
-            std::cerr << "Comando inválido na linha " << count + 1 << ": " << line << std::endl;
+            std::cerr << "Erro: Comando inválido na linha " << count + 1 << ": " << line << std::endl;
             count++;
             continue;
         }
@@ -174,7 +173,7 @@ void processFile(const std::string &filePath)
             {
                 if (count + 2 >= lines.size())
                 {
-                    std::cerr << "Insufficient lines for operation '" << command << "' starting at line " << count + 1 << std::endl;
+                    std::cerr << "Erro: Linhas insuficientes para a operação '" << command << "' iniciando na linha " << count + 1 << std::endl;
                     return;
                 }
                 populatePolynomial(lines[++count], poly1);
@@ -188,7 +187,7 @@ void processFile(const std::string &filePath)
             {
                 if (count + 1 >= lines.size())
                 {
-                    std::cerr << "Insufficient lines for command '" << command << "' starting at line " << count + 1 << std::endl;
+                    std::cerr << "Erro: Linhas insuficientes para o comando '" << command << "' iniciando na linha " << count + 1 << std::endl;
                     return;
                 }
                 populatePolynomial(lines[++count], poly1);
@@ -199,7 +198,7 @@ void processFile(const std::string &filePath)
             {
                 if (count + 2 >= lines.size())
                 {
-                    std::cerr << "Insufficient lines for command 'a' starting at line " << count + 1 << std::endl;
+                    std::cerr << "Erro: Linhas insuficientes para o comando 'a' iniciando na linha " << count + 1 << std::endl;
                     return;
                 }
                 float x;
@@ -217,7 +216,7 @@ void processFile(const std::string &filePath)
                 break;
             }
             default:
-                std::cout << "Comando inválido na linha " << count + 1 << ": " << line << std::endl;
+                std::cout << "Erro: Comando inválido na linha " << count + 1 << ": " << line << std::endl;
         }
         count++;
     }
