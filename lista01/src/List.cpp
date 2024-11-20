@@ -8,21 +8,26 @@
 std::string toSuperscript(int number)
 {
     std::map<char, std::string> superscripts = {
-        {0, "⁰"},
-        {1, "¹"},
-        {2, "²"},
-        {3, "³"},
-        {4, "⁴"},
-        {5, "⁵"},
-        {6, "⁶"},
-        {7, "⁷"},
-        {8, "⁸"},
-        {9, "⁹"},
+        {'0', "\u2070"},
+        {'1', "\u00B9"},
+        {'2', "\u00B2"},
+        {'3', "\u00B3"},
+        {'4', "\u2074"},
+        {'5', "\u2075"},
+        {'6', "\u2076"},
+        {'7', "\u2077"},
+        {'8', "\u2078"},
+        {'9', "\u2079"},
     };
 
-    std::string result = "";
+    // convert number to string
+    std::string numberStr = std::to_string(number);
 
-    result += superscripts[number];
+    std::string result = "";
+    for (char digit : numberStr)
+    {
+        result += superscripts[digit];
+    }
 
     return result;
 }
@@ -185,7 +190,7 @@ void List::insert(float coefficient, int degree)
 {
     if (coefficient == 0.0f)
         return; // No need to store zero coefficient
-    
+
     if (degree < 0)
     {
         std::cerr << "Degree must be a non-negative integer.\n";
