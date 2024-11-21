@@ -40,9 +40,10 @@ public:
     void showALL(bool endl=true) const;
     int getDegree() const;
     Node *getHead() const;
-    void printTerm(const Node *node, bool &first, float x = NAN) const;
     int getNumTerms() const;
     void evaluate(float x);
+    std::string toString(float x=NAN) const;
+    std::string formatCoefficient(float coeff) const;
 
     List operator+(const List &other) const;
     List operator-(const List &other) const;

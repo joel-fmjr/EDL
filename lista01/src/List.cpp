@@ -3,6 +3,8 @@
 #include <string>
 #include <cmath>
 #include <map>
+#include <iomanip>
+#include <sstream>
 
 // Function to convert a number to its superscript string
 std::string toSuperscript(int number)
@@ -277,40 +279,66 @@ void List::remove(Node *node)
     removeDegree(node->degree);
 }
 
-// Helper function to print a single term
-void List::printTerm(const Node *node, bool &first, float x) const
+std::string List::formatCoefficient(float coeff) const
 {
-    float coeff = node->coefficient;
-    int deg = node->degree;
-
-    if (coeff == 0.0f)
-        return;
-
-    // Handle sign
-    if (coeff > 0 && !first)
-        std::cout << " + ";
-    else if (coeff < 0 && first)
-        std::cout << "-";
-    else if (coeff < 0)
-        std::cout << " - ";
-
-    // Handle coefficient
-    if (deg == 0 || std::abs(coeff) != 1.0f)
-        std::cout << std::abs(coeff);
-
-    // Handle variable and degree
-    if (deg > 0)
+    std::stringstream stream;
+    if(std::floor(coeff) == coeff)
     {
-        if (std::isnan(x))
-            std::cout << "x";
-        else
-            std::cout << " x (" << x << ")";
-        if (deg > 1)
-            std::cout << toSuperscript(deg);
+        return std::to_string((int)coeff);
+    }
+    else{
+        //round to 2 decimal places
+        stream << std::fixed << std::setprecision(2) << coeff;
+        std::string s = stream.str();
+        return s;
+    }
+    return std::to_string(coeff);
+}
+
+std::string List::toString(float x) const
+{
+    if (!head)
+        return "0";
+
+    Node *current = head;
+    std::string result;
+    bool first = true;
+
+    while (current)
+    {
+        float coeff = current->coefficient;
+        int deg = current->degree;
+
+        if (coeff > 0 && !first)
+            result += " + ";
+        else if (coeff < 0 && first)
+            result += "-";
+        else if (coeff < 0)
+            result += " - ";
+
+        if (deg == 0 || std::abs(coeff) != 1.0f)
+            result += formatCoefficient(std::abs(coeff));
+
+        if (deg > 0)
+        {
+            if (std::isnan(x))
+                result += "x";
+            else if (coeff != 1.0f && coeff != -1.0f)
+                result += " x (" + formatCoefficient(x) + ")";
+            else
+                result += "(" + formatCoefficient(x) + ")";
+            if (deg > 1)
+                result += toSuperscript(deg);
+        }
+
+        first = false;
+        current = current->next;
     }
 
-    first = false;
+    return result;
 }
+
+
 
 // Print the polynomial
 void List::showALL(bool endl) const
@@ -321,13 +349,8 @@ void List::showALL(bool endl) const
         return;
     }
 
-    const Node *node = head;
-    bool first = true;
-    while (node != nullptr)
-    {
-        printTerm(node, first);
-        node = node->next;
-    }
+    std::cout << toString();
+
     if (endl)
     {
         std::cout << std::endl;
@@ -343,18 +366,18 @@ void List::evaluate(float x)
         return;
     }
 
-    const Node *node = head;
     float result = 0.0f;
 
-    std::cout << "p(" << x << ") = ";
-    bool first = true;
-
-    while (node != nullptr)
+    Node *current = head;
+    while (current != nullptr)
     {
-        result += node->coefficient * std::pow(x, node->degree);
-        printTerm(node, first, x);
-        node = node->next;
+        result += current->coefficient * std::pow(x, current->degree);
+        current = current->next;
     }
+
+    std::cout << "p(" << x << ") = ";
+
+    std::cout << toString(x);
     std::cout << " = " << result << std::endl;
 }
 
@@ -433,40 +456,7 @@ std::ostream &operator<<(std::ostream &os, const List &list)
         return os;
     }
 
-    Node *node = list.getHead();
-    bool first = true;
-    while (node != nullptr)
-    {
-        float coeff = node->getCoefficient();
-        int deg = node->getDegree();
-
-        if (coeff == 0.0f)
-        {
-            node = node->getNext();
-            continue;
-        }
-
-        // Handle sign
-        if (coeff > 0 && !first)
-            os << " + ";
-        else if (coeff < 0)
-            os << " - ";
-
-        // Handle coefficient
-        if (deg == 0 || std::abs(coeff) != 1.0f)
-            os << std::abs(coeff);
-
-        // Handle variable and degree
-        if (deg > 0)
-        {
-            os << "x";
-            if (deg > 1)
-                os << "^" << deg;
-        }
-
-        first = false;
-        node = node->getNext();
-    }
+    os << list.toString();
 
     return os;
 }
