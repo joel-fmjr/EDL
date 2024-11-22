@@ -369,6 +369,19 @@ List List::operator*(const List &other) const
     return result;
 }
 
+std::ostream &operator<<(std::ostream &os, const List &list)
+{
+    if (list.isEmpty())
+    {
+        os << "0";
+        return os;
+    }
+
+    os << list.toString();
+
+    return os;
+}
+
 // Helper method to delete all nodes
 void List::clear()
 {
@@ -410,17 +423,4 @@ void List::copyFrom(const List &other)
     }
 
     tail = currentThis;
-}
-
-std::ostream &operator<<(std::ostream &os, const List &list)
-{
-    if (list.isEmpty())
-    {
-        os << "0";
-        return os;
-    }
-
-    os << list.toString();
-
-    return os;
 }
