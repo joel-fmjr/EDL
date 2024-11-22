@@ -235,7 +235,7 @@ void processFile(const std::string &filePath)
                 }
                 populatePolynomial(lines[++count], poly1);
                 populatePolynomial(lines[++count], poly2);
-                processLine(command, poly1, poly2, std::nan("")); // Passing NaN as default
+                processLine(command, poly1, poly2); // Passing NaN as default
                 break;
             }
             case 'p':
@@ -248,7 +248,7 @@ void processFile(const std::string &filePath)
                     return;
                 }
                 populatePolynomial(lines[++count], poly1);
-                processLine(command, poly1, poly2, std::nan("")); // Passing NaN as default
+                processLine(command, poly1, poly2); // Passing NaN as default
                 break;
             }
             case 'a':
