@@ -13,33 +13,34 @@ private:
     Node *tail;
     int listSize;
 
-    // Helper methods
-    void copyFrom(const List &other);
+    // Helper methods (private)
     void clear();
-    Node *searchDegree(int degree) const;
+    void copyFrom(const List &other);
+    std::string formatPrecision(float coeff) const;
+    std::string toSuperscript(int degree) const;
 
 public:
-    // Constructors and Destructor
     List();
     List(const List &other);
-    List &operator=(const List &other);
     ~List();
+    List &operator=(const List &other);
 
-    // Public interface
-    std::tuple<float, int> getValues(int degree) const;
-    void changeNode(int currentDegree, float coefficient, int degree);
-    Node *getNext(Node *node) const;
-    int size() const;
-    bool isEmpty() const;
-    bool exists(int degree) const;
     void insert(float coefficient, int degree);
     void remove(int degree);
-    void showALL(bool endl=true) const;
-    int getDegree() const;
+    bool exists(int degree) const;
+    int size() const;
+    bool isEmpty() const;
+    Node *search(int degree) const;
     Node *getHead() const;
+    Node *getNext(Node *node) const;
+    std::tuple<float, int> getValues(int degree) const;
+
+    int getDegree() const;
     void evaluate(float x);
-    std::string toString(float x=NAN) const;
-    std::string formatPrecision(float coeff) const;
+    void showALL(bool endl = true) const;
+    std::string toString(float x = NAN) const;
+
+    void changeNode(int currentDegree, float coefficient, int degree);
 
     List operator+(const List &other) const;
     List operator-(const List &other) const;

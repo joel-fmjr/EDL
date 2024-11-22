@@ -6,77 +6,6 @@
 #include <iomanip>
 #include <sstream>
 
-// Function to convert a number to its superscript string
-std::string toSuperscript(int number)
-{
-    std::map<char, std::string> superscripts = {
-        {'0', "\u2070"},
-        {'1', "\u00B9"},
-        {'2', "\u00B2"},
-        {'3', "\u00B3"},
-        {'4', "\u2074"},
-        {'5', "\u2075"},
-        {'6', "\u2076"},
-        {'7', "\u2077"},
-        {'8', "\u2078"},
-        {'9', "\u2079"},
-    };
-
-    // convert number to string
-    std::string numberStr = std::to_string(number);
-
-    std::string result = "";
-    for (char digit : numberStr)
-    {
-        result += superscripts[digit];
-    }
-
-    return result;
-}
-
-// Helper method to deep copy nodes
-void List::copyFrom(const List &other)
-{
-    if (other.head == nullptr)
-    {
-        head = tail = nullptr;
-        listSize = 0;
-        return;
-    }
-
-    // Copy the head node
-    head = new Node(other.head->coefficient, other.head->degree);
-    listSize = 1;
-    Node *currentOther = other.head->next;
-    Node *currentThis = head;
-
-    // Copy the rest of the nodes
-    while (currentOther != nullptr)
-    {
-        Node *newNode = new Node(currentOther->coefficient, currentOther->degree);
-        currentThis->next = newNode;
-        currentThis = newNode;
-        currentOther = currentOther->next;
-        listSize++;
-    }
-
-    tail = currentThis;
-}
-
-// Helper method to delete all nodes
-void List::clear()
-{
-    Node *current = head;
-    while (current != nullptr)
-    {
-        Node *nextNode = current->next;
-        delete current;
-        current = nextNode;
-    }
-    head = tail = nullptr;
-    listSize = 0;
-}
-
 // Constructor
 List::List()
     : head(nullptr), tail(nullptr), listSize(0) {}
@@ -86,6 +15,12 @@ List::List(const List &other)
     : head(nullptr), tail(nullptr), listSize(0)
 {
     copyFrom(other);
+}
+
+// Destructor
+List::~List()
+{
+    clear();
 }
 
 // Copy Assignment Operator
@@ -99,84 +34,11 @@ List &List::operator=(const List &other)
     return *this;
 }
 
-// Destructor
-List::~List()
-{
-    clear();
-}
-
-// Internal method to get the next node
-Node *List::getNext(Node *node) const
-{
-    if (node == nullptr)
-        return nullptr;
-    return node->next;
-}
-
-// Internal method to search for a node by degree
-Node *List::searchDegree(int degree) const
-{
-    Node *current = head;
-    while (current != nullptr)
-    {
-        if (current->degree == degree)
-            return current;
-        current = current->next;
-    }
-    return nullptr;
-}
-
-// Get the coefficient and degree as a tuple for a given degree
-std::tuple<float, int> List::getValues(int degree) const
-{
-    Node *node = searchDegree(degree);
-    if (node == nullptr)
-        return {0.0f, 0};
-    return {node->coefficient, node->degree};
-}
-
-// Change the coefficient of a node with a specific degree
-void List::changeNode(int currentDegree, float coefficient, int degree)
-{
-    Node *node = searchDegree(currentDegree);
-    if (node == nullptr)
-    {
-        std::cerr << "Grau " << currentDegree << " não encontrado. Inserindo novo termo.\n";
-        insert(coefficient, degree);
-        return;
-    }
-
-    node->coefficient = coefficient;
-
-    if (node->coefficient == 0.0f)
-    {
-        remove(degree);
-    }
-}
-
-// Get the size of the list
-int List::size() const
-{
-    return listSize;
-}
-
-// Check if the list is empty
-bool List::isEmpty() const
-{
-    return head == nullptr;
-}
-
-// Check if a node with a specific degree exists
-bool List::exists(int degree) const
-{
-    return searchDegree(degree) != nullptr;
-}
-
 // Insert a term into the list in sorted order
 void List::insert(float coefficient, int degree)
 {
     if (coefficient == 0.0f)
-        return; // No need to store zero coefficient
+        return;
 
     if (degree < 0)
     {
@@ -185,7 +47,7 @@ void List::insert(float coefficient, int degree)
     }
 
     // Check if degree already exists and update coefficient if it does
-    Node *existingNode = searchDegree(degree);
+    Node *existingNode = search(degree);
     if (existingNode != nullptr)
     {
         existingNode->coefficient += coefficient;
@@ -256,19 +118,100 @@ void List::remove(int degree)
     }
 }
 
-std::string List::formatPrecision(float number) const
+bool List::exists(int degree) const
 {
-    std::stringstream stream;
-    if(std::floor(number) == number)
+    return search(degree) != nullptr;
+}
+
+int List::size() const
+{
+    return listSize;
+}
+
+bool List::isEmpty() const
+{
+    return head == nullptr;
+}
+
+// Search for a node by degree
+Node *List::search(int degree) const
+{
+    Node *current = head;
+    while (current != nullptr)
     {
-        return std::to_string((int)number);
+        if (current->degree == degree)
+            return current;
+        current = current->next;
     }
-    else{
-        stream << std::fixed << std::setprecision(2) << number;
-        std::string s = stream.str();
-        return s;
+    return nullptr;
+}
+
+Node *List::getHead() const
+{
+    return head;
+}
+
+Node *List::getNext(Node *node) const
+{
+    if (node == nullptr)
+        return nullptr;
+    return node->next;
+}
+
+std::tuple<float, int> List::getValues(int degree) const
+{
+    Node *node = search(degree);
+    if (node == nullptr)
+        return {0.0f, 0};
+    return {node->coefficient, node->degree};
+}
+
+int List::getDegree() const
+{
+    if (isEmpty())
+        return 0;
+
+    return head->degree;
+}
+
+void List::evaluate(float x)
+{
+    if (isEmpty())
+    {
+        std::cout << "p(" << x << ") = 0" << std::endl;
+        return;
     }
-    return std::to_string(number);
+
+    float result = 0.0f;
+
+    Node *current = head;
+    while (current != nullptr)
+    {
+        result += current->coefficient * std::pow(x, current->degree);
+        current = current->next;
+    }
+
+    std::cout << "p(" << x << ") = ";
+
+    std::cout << toString(x);
+    std::cout << " = " << result << std::endl;
+}
+
+// Print the polynomial
+void List::showALL(bool endl) const
+{
+    if (isEmpty())
+    {
+        std::cout << "0" << std::endl;
+        return;
+    }
+
+    std::cout << toString();
+
+    if (endl)
+    {
+        std::cout << std::endl;
+    }
 }
 
 std::string List::toString(float x) const
@@ -314,60 +257,67 @@ std::string List::toString(float x) const
     return result;
 }
 
-
-
-// Print the polynomial
-void List::showALL(bool endl) const
+std::string List::formatPrecision(float number) const
 {
-    if (isEmpty())
+    std::stringstream stream;
+    if (std::floor(number) == number)
     {
-        std::cout << "0" << std::endl;
+        return std::to_string((int)number);
+    }
+    else
+    {
+        stream << std::fixed << std::setprecision(2) << number;
+        std::string s = stream.str();
+        return s;
+    }
+    return std::to_string(number);
+}
+
+// Function to convert a number to its superscript string
+std::string List::toSuperscript(int number) const
+{
+    std::map<char, std::string> superscripts = {
+        {'0', "\u2070"},
+        {'1', "\u00B9"},
+        {'2', "\u00B2"},
+        {'3', "\u00B3"},
+        {'4', "\u2074"},
+        {'5', "\u2075"},
+        {'6', "\u2076"},
+        {'7', "\u2077"},
+        {'8', "\u2078"},
+        {'9', "\u2079"},
+    };
+
+    // convert number to string
+    std::string numberStr = std::to_string(number);
+
+    std::string result = "";
+    for (char digit : numberStr)
+    {
+        result += superscripts[digit];
+    }
+
+    return result;
+}
+
+// Change the coefficient and degree of a node with a specific degree
+void List::changeNode(int currentDegree, float coefficient, int degree)
+{
+    Node *node = search(currentDegree);
+    if (node == nullptr)
+    {
+        std::cerr << "Grau " << currentDegree << " não encontrado. Inserindo novo termo.\n";
+        insert(coefficient, degree);
         return;
     }
 
-    std::cout << toString();
+    node->coefficient = coefficient;
 
-    if (endl)
+    if (node->coefficient == 0.0f)
     {
-        std::cout << std::endl;
+        remove(degree);
     }
-}
-
-// evaluate the polynomial at a given point x
-void List::evaluate(float x)
-{
-    if (isEmpty())
-    {
-        std::cout << "p(" << x << ") = 0" << std::endl;
-        return;
-    }
-
-    float result = 0.0f;
-
-    Node *current = head;
-    while (current != nullptr)
-    {
-        result += current->coefficient * std::pow(x, current->degree);
-        current = current->next;
-    }
-
-    std::cout << "p(" << x << ") = ";
-
-    std::cout << toString(x);
-    std::cout << " = " << result << std::endl;
-}
-
-int List::getDegree() const
-{
-    if (isEmpty())
-        return 0;
-
-    return head->degree;
-}
-
-Node *List::getHead() const
-{
-    return head;
 }
 
 List List::operator+(const List &other) const
@@ -417,6 +367,49 @@ List List::operator*(const List &other) const
     }
 
     return result;
+}
+
+// Helper method to delete all nodes
+void List::clear()
+{
+    Node *current = head;
+    while (current != nullptr)
+    {
+        Node *nextNode = current->next;
+        delete current;
+        current = nextNode;
+    }
+    head = tail = nullptr;
+    listSize = 0;
+}
+
+// Helper method to deep copy nodes
+void List::copyFrom(const List &other)
+{
+    if (other.head == nullptr)
+    {
+        head = tail = nullptr;
+        listSize = 0;
+        return;
+    }
+
+    // Copy the head node
+    head = new Node(other.head->coefficient, other.head->degree);
+    listSize = 1;
+    Node *currentOther = other.head->next;
+    Node *currentThis = head;
+
+    // Copy the rest of the nodes
+    while (currentOther != nullptr)
+    {
+        Node *newNode = new Node(currentOther->coefficient, currentOther->degree);
+        currentThis->next = newNode;
+        currentThis = newNode;
+        currentOther = currentOther->next;
+        listSize++;
+    }
+
+    tail = currentThis;
 }
 
 std::ostream &operator<<(std::ostream &os, const List &list)

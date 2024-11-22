@@ -55,4 +55,8 @@ $(TEST_DIR)/main.o: $(TEST_DIR)/main.cpp $(INCLUDE_DIR)/List.h $(INCLUDE_DIR)/No
 clean:
 	rm -f $(SRC_DIR)/*.o $(TEST_DIR)/*.o $(TARGET)
 
+# Run
+run: $(TARGET)
+	./$(TARGET) tests.txt
+
 .PHONY: all clean
