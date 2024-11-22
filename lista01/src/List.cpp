@@ -127,29 +127,21 @@ Node *List::searchDegree(int degree) const
 }
 
 // Get the coefficient and degree as a tuple for a given degree
-std::tuple<float, int> List::getValuesDegree(int degree) const
+std::tuple<float, int> List::getValues(int degree) const
 {
     Node *node = searchDegree(degree);
-    if (node == nullptr)
-        return {0.0f, 0};
-    return {node->coefficient, node->degree};
-}
-
-// Get the coefficient and degree as a tuple for a given node
-std::tuple<float, int> List::getValues(Node *node) const
-{
     if (node == nullptr)
         return {0.0f, 0};
     return {node->coefficient, node->degree};
 }
 
 // Change the coefficient of a node with a specific degree
-void List::changeNode(float coefficient, int degree)
+void List::changeNode(int currentDegree, float coefficient, int degree)
 {
-    Node *node = searchDegree(degree);
+    Node *node = searchDegree(currentDegree);
     if (node == nullptr)
     {
-        std::cerr << "Degree " << degree << " not found. Inserting as new term.\n";
+        std::cerr << "Grau " << currentDegree << " não encontrado. Inserindo novo termo.\n";
         insert(coefficient, degree);
         return;
     }
@@ -158,7 +150,7 @@ void List::changeNode(float coefficient, int degree)
 
     if (node->coefficient == 0.0f)
     {
-        removeDegree(degree);
+        remove(degree);
     }
 }
 
@@ -175,16 +167,9 @@ bool List::isEmpty() const
 }
 
 // Check if a node with a specific degree exists
-bool List::degreeExists(int degree) const
+bool List::exists(int degree) const
 {
     return searchDegree(degree) != nullptr;
-}
-
-// Check if a specific node exists
-bool List::exists(Node *node) const
-{
-    Node *existingNode = searchDegree(node->degree);
-    return existingNode == node;
 }
 
 // Insert a term into the list in sorted order
@@ -195,8 +180,8 @@ void List::insert(float coefficient, int degree)
 
     if (degree < 0)
     {
-        std::cerr << "Degree must be a non-negative integer.\n";
-        exit(1);
+        std::cerr << "O grau deve ser um número inteiro não negativo.\n";
+        return;
     }
 
     // Check if degree already exists and update coefficient if it does
@@ -206,7 +191,7 @@ void List::insert(float coefficient, int degree)
         existingNode->coefficient += coefficient;
         if (existingNode->coefficient == 0.0f)
         {
-            removeDegree(degree);
+            remove(degree);
         }
         return;
     }
@@ -238,7 +223,7 @@ void List::insert(float coefficient, int degree)
 }
 
 // Remove a node with a specific degree from the list
-void List::removeDegree(int degree)
+void List::remove(int degree)
 {
     if (isEmpty())
         return;
@@ -271,28 +256,19 @@ void List::removeDegree(int degree)
     }
 }
 
-void List::remove(Node *node)
-{
-    if (node == nullptr)
-        return;
-
-    removeDegree(node->degree);
-}
-
-std::string List::formatCoefficient(float coeff) const
+std::string List::formatPrecision(float number) const
 {
     std::stringstream stream;
-    if(std::floor(coeff) == coeff)
+    if(std::floor(number) == number)
     {
-        return std::to_string((int)coeff);
+        return std::to_string((int)number);
     }
     else{
-        //round to 2 decimal places
-        stream << std::fixed << std::setprecision(2) << coeff;
+        stream << std::fixed << std::setprecision(2) << number;
         std::string s = stream.str();
         return s;
     }
-    return std::to_string(coeff);
+    return std::to_string(number);
 }
 
 std::string List::toString(float x) const
@@ -317,16 +293,16 @@ std::string List::toString(float x) const
             result += " - ";
 
         if (deg == 0 || std::abs(coeff) != 1.0f)
-            result += formatCoefficient(std::abs(coeff));
+            result += formatPrecision(std::abs(coeff));
 
         if (deg > 0)
         {
             if (std::isnan(x))
                 result += "x";
             else if (coeff != 1.0f && coeff != -1.0f)
-                result += " x (" + formatCoefficient(x) + ")";
+                result += " x (" + formatPrecision(x) + ")";
             else
-                result += "(" + formatCoefficient(x) + ")";
+                result += "(" + formatPrecision(x) + ")";
             if (deg > 1)
                 result += toSuperscript(deg);
         }
@@ -392,11 +368,6 @@ int List::getDegree() const
 Node *List::getHead() const
 {
     return head;
-}
-
-int List::getNumTerms() const
-{
-    return size();
 }
 
 List List::operator+(const List &other) const

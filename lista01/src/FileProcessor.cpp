@@ -136,7 +136,7 @@ void processLine(char command, List &poly1, List &poly2, float x)
         {
             std::cout << "Número de termos do polinômio: ";
             poly1.showALL(false);
-            std::cout << " , é " << poly1.getNumTerms() << std::endl;
+            std::cout << " , é " << poly1.size() << std::endl;
             poly1 = List();
             break;
         }

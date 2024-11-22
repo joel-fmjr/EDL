@@ -26,24 +26,20 @@ public:
     ~List();
 
     // Public interface
-    std::tuple<float, int> getValues(Node *node) const;
-    std::tuple<float, int> getValuesDegree(int degree) const;
-    void changeNode(float coefficient, int degree);
+    std::tuple<float, int> getValues(int degree) const;
+    void changeNode(int currentDegree, float coefficient, int degree);
     Node *getNext(Node *node) const;
     int size() const;
     bool isEmpty() const;
-    bool degreeExists(int degree) const;
-    bool exists(Node *node) const;
+    bool exists(int degree) const;
     void insert(float coefficient, int degree);
-    void removeDegree(int degree);
-    void remove(Node *node);
+    void remove(int degree);
     void showALL(bool endl=true) const;
     int getDegree() const;
     Node *getHead() const;
-    int getNumTerms() const;
     void evaluate(float x);
     std::string toString(float x=NAN) const;
-    std::string formatCoefficient(float coeff) const;
+    std::string formatPrecision(float coeff) const;
 
     List operator+(const List &other) const;
     List operator-(const List &other) const;
