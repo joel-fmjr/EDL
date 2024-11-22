@@ -121,7 +121,7 @@ void populatePolynomial(const std::string &line, List &poly)
  * @param poly2 Reference to the second `List` object representing the second polynomial.
  * @param x Optional float value used for evaluating the polynomial when the command is 'a'.
  */
-void processLine(char command, List &poly1, List &poly2, float x = std::nan(""))
+void processLine(char command, List &poly1, List &poly2, float x)
 {
     switch (command)
     {
@@ -171,8 +171,7 @@ void processLine(char command, List &poly1, List &poly2, float x = std::nan(""))
         {
             if (!std::isnan(x))
             {
-                float evaluation = poly1.evaluate(x);
-                std::cout << "Avaliação do polinômio em x = " << x << " é " << evaluation << std::endl;
+                poly1.evaluate(x); // Removed assignment since evaluate returns void
             }
             else
             {
@@ -236,7 +235,7 @@ void processFile(const std::string &filePath)
                 }
                 populatePolynomial(lines[++count], poly1);
                 populatePolynomial(lines[++count], poly2);
-                processLine(command, poly1, poly2);
+                processLine(command, poly1, poly2, std::nan("")); // Passing NaN as default
                 break;
             }
             case 'p':
@@ -249,7 +248,7 @@ void processFile(const std::string &filePath)
                     return;
                 }
                 populatePolynomial(lines[++count], poly1);
-                processLine(command, poly1, poly2);
+                processLine(command, poly1, poly2, std::nan("")); // Passing NaN as default
                 break;
             }
             case 'a':
