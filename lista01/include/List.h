@@ -17,7 +17,9 @@ private:
     void clear();
     void copyFrom(const List &other);
     std::string formatPrecision(float coeff) const;
+    std::string toString(float x = NAN) const;
     std::string toSuperscript(int degree) const;
+
 
 public:
     List();
@@ -38,7 +40,7 @@ public:
     int getDegree() const;
     void evaluate(float x);
     void showALL(bool endl = true) const;
-    std::string toString(float x = NAN) const;
+    friend std::ostream &operator<<(std::ostream &os, const List &list);
 
     void changeNode(int currentDegree, float coefficient, int degree);
 

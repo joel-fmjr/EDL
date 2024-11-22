@@ -1,4 +1,5 @@
 // FileProcessor.cpp
+
 #include "FileProcessor.h"
 #include <iostream>
 #include <fstream>
@@ -6,7 +7,14 @@
 #include <cctype>
 #include <cmath>
 
-// Trims leading and trailing whitespace from a string
+/**
+ * @brief Trims leading and trailing whitespace from a string.
+ *
+ * This function removes any leading and trailing whitespace characters from the input string.
+ *
+ * @param str The input string to be trimmed.
+ * @return A new string with leading and trailing whitespace removed.
+ */
 std::string trim(const std::string &str)
 {
     size_t first = str.find_first_not_of(" \t\n\r\f\v");
@@ -17,7 +25,17 @@ std::string trim(const std::string &str)
     return str.substr(first, (last - first + 1));
 }
 
-// Reads a file and returns a vector of trimmed, non-empty lines
+/**
+ * @brief Reads a file and returns a vector of trimmed, non-empty lines.
+ *
+ * This function opens the specified file, reads its contents line by line, trims each line,
+ * and stores non-empty lines into a vector.
+ *
+ * @param filename The path to the file to be read.
+ * @return A vector containing trimmed, non-empty lines from the file.
+ *
+ * @throws std::cerr If the file cannot be opened, an error message is printed and the program exits.
+ */
 std::vector<std::string> trimFileLines(const std::string &filename)
 {
     std::ifstream inputFile(filename);
@@ -41,7 +59,16 @@ std::vector<std::string> trimFileLines(const std::string &filename)
     return lines;
 }
 
-// Extracts the command character from a line
+/**
+ * @brief Extracts the command character from a line.
+ *
+ * This function parses a line to determine if it represents a valid command.
+ * If the line contains exactly one character, it converts it to lowercase and assigns it to the command.
+ * Otherwise, it sets the command to a null character indicating an invalid command.
+ *
+ * @param line The input line from which to extract the command.
+ * @param command Pointer to a character where the extracted command will be stored.
+ */
 void getCommand(const std::string &line, char *command)
 {
     if (line.length() == 1)
@@ -54,7 +81,17 @@ void getCommand(const std::string &line, char *command)
     }
 }
 
-// Populates a polynomial from a line containing coefficient and degree pairs
+/**
+ * @brief Populates a polynomial from a line containing coefficient and degree pairs.
+ *
+ * This function parses a line containing pairs of coefficients and degrees,
+ * and inserts each term into the provided polynomial list.
+ *
+ * @param line The input line containing coefficient and degree pairs.
+ * @param poly Reference to a `List` object representing the polynomial to be populated.
+ *
+ * @throws std::cerr If the input line is empty, an error message is printed and the program exits.
+ */
 void populatePolynomial(const std::string &line, List &poly)
 {
     if (line.empty())
@@ -72,8 +109,19 @@ void populatePolynomial(const std::string &line, List &poly)
     }
 }
 
-// Processes a single command with the given polynomials and optional evaluation point
-void processLine(char command, List &poly1, List &poly2, float x)
+/**
+ * @brief Processes a single command with the given polynomials and optional evaluation point.
+ *
+ * This function executes the specified command by performing operations on the provided polynomials.
+ * Supported commands include addition ('+'), subtraction ('-'), multiplication ('*'), getting the degree ('g'),
+ * printing the polynomial ('p'), evaluating the polynomial ('a'), and getting the number of terms ('t').
+ *
+ * @param command The command character indicating the operation to perform.
+ * @param poly1 Reference to the first `List` object representing the first polynomial.
+ * @param poly2 Reference to the second `List` object representing the second polynomial.
+ * @param x Optional float value used for evaluating the polynomial when the command is 'a'.
+ */
+void processLine(char command, List &poly1, List &poly2, float x = std::nan(""))
 {
     switch (command)
     {
@@ -123,7 +171,8 @@ void processLine(char command, List &poly1, List &poly2, float x)
         {
             if (!std::isnan(x))
             {
-                poly1.evaluate(x);
+                float evaluation = poly1.evaluate(x);
+                std::cout << "Avaliação do polinômio em x = " << x << " é " << evaluation << std::endl;
             }
             else
             {
@@ -145,7 +194,16 @@ void processLine(char command, List &poly1, List &poly2, float x)
     }
 }
 
-// Processes the entire file by reading commands and executing them
+/**
+ * @brief Processes the entire file by reading commands and executing them.
+ *
+ * This function reads a file containing commands and polynomial data, processes each line,
+ * and performs the corresponding operations on the polynomials.
+ *
+ * The file is expected to contain commands followed by the necessary polynomial data or evaluation points.
+ *
+ * @param filePath The path to the input file to be processed.
+ */
 void processFile(const std::string &filePath)
 {
     std::vector<std::string> lines = trimFileLines(filePath);

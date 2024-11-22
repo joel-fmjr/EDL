@@ -1,3 +1,5 @@
+// List.cpp
+
 #include "List.h"
 #include <iostream>
 #include <string>
@@ -6,24 +8,55 @@
 #include <iomanip>
 #include <sstream>
 
-// Constructor
+/**
+ * @class List
+ * @brief Represents a polynomial as a singly linked list.
+ *
+ * The List class manages a polynomial where each node contains a coefficient and degree.
+ * The list is maintained in descending order of degrees to facilitate polynomial operations
+ * such as addition, subtraction, and multiplication.
+ */
+
+/**
+ * @brief Default constructor that initializes an empty polynomial list.
+ *
+ * Initializes the head and tail pointers to nullptr and sets the list size to zero.
+ */
 List::List()
     : head(nullptr), tail(nullptr), listSize(0) {}
 
-// Copy Constructor
+/**
+ * @brief Copy constructor that creates a deep copy of another List.
+ *
+ * @param other The List object to copy from.
+ *
+ * Initializes the new list by copying nodes from the `other` list.
+ */
 List::List(const List &other)
     : head(nullptr), tail(nullptr), listSize(0)
 {
     copyFrom(other);
 }
 
-// Destructor
+/**
+ * @brief Destructor that cleans up all dynamically allocated nodes in the list.
+ *
+ * Calls the `clear` method to delete all nodes and reset pointers.
+ */
 List::~List()
 {
     clear();
 }
 
-// Copy Assignment Operator
+/**
+ * @brief Copy assignment operator that assigns one List to another.
+ *
+ * @param other The List object to assign from.
+ * @return Reference to the assigned List object.
+ *
+ * Performs a deep copy of the `other` list into the current list.
+ * Handles self-assignment by checking if the current object is the same as `other`.
+ */
 List &List::operator=(const List &other)
 {
     if (this == &other)
@@ -34,7 +67,17 @@ List &List::operator=(const List &other)
     return *this;
 }
 
-// Insert a term into the list in sorted order
+/**
+ * @brief Inserts a term into the list in sorted order.
+ *
+ * @param coefficient The coefficient of the term to insert.
+ * @param degree The degree of the term to insert.
+ *
+ * If a term with the same degree already exists, its coefficient is updated.
+ * The list maintains descending order based on degrees.
+ *
+ * @note Degrees must be non-negative integers. Terms with a zero coefficient are not inserted.
+ */
 void List::insert(float coefficient, int degree)
 {
     if (coefficient == 0.0f)
@@ -84,7 +127,14 @@ void List::insert(float coefficient, int degree)
     listSize++;
 }
 
-// Remove a node with a specific degree from the list
+/**
+ * @brief Removes a node with a specific degree from the list.
+ *
+ * @param degree The degree of the term to remove.
+ *
+ * Searches for the node with the given degree and removes it from the list.
+ * Updates the head and tail pointers as necessary.
+ */
 void List::remove(int degree)
 {
     if (isEmpty())
@@ -118,22 +168,43 @@ void List::remove(int degree)
     }
 }
 
+/**
+ * @brief Checks whether a term with a specific degree exists in the list.
+ *
+ * @param degree The degree to search for.
+ * @return `true` if a term with the given degree exists; otherwise, `false`.
+ */
 bool List::exists(int degree) const
 {
     return search(degree) != nullptr;
 }
 
+/**
+ * @brief Retrieves the number of terms in the polynomial.
+ *
+ * @return The total number of terms (nodes) in the list.
+ */
 int List::size() const
 {
     return listSize;
 }
 
+/**
+ * @brief Checks whether the polynomial list is empty.
+ *
+ * @return `true` if the list is empty; otherwise, `false`.
+ */
 bool List::isEmpty() const
 {
     return head == nullptr;
 }
 
-// Search for a node by degree
+/**
+ * @brief Searches for a node by its degree.
+ *
+ * @param degree The degree of the term to search for.
+ * @return Pointer to the node with the specified degree if found; otherwise, `nullptr`.
+ */
 Node *List::search(int degree) const
 {
     Node *current = head;
@@ -146,11 +217,22 @@ Node *List::search(int degree) const
     return nullptr;
 }
 
+/**
+ * @brief Retrieves the head node of the list.
+ *
+ * @return Pointer to the head node.
+ */
 Node *List::getHead() const
 {
     return head;
 }
 
+/**
+ * @brief Retrieves the next node after a given node.
+ *
+ * @param node Pointer to the current node.
+ * @return Pointer to the next node if it exists; otherwise, `nullptr`.
+ */
 Node *List::getNext(Node *node) const
 {
     if (node == nullptr)
@@ -158,6 +240,12 @@ Node *List::getNext(Node *node) const
     return node->next;
 }
 
+/**
+ * @brief Retrieves the coefficient and degree of a term by its degree.
+ *
+ * @param degree The degree of the term to retrieve.
+ * @return A tuple containing the coefficient and degree. Returns {0.0f, 0} if not found.
+ */
 std::tuple<float, int> List::getValues(int degree) const
 {
     Node *node = search(degree);
@@ -166,6 +254,11 @@ std::tuple<float, int> List::getValues(int degree) const
     return {node->coefficient, node->degree};
 }
 
+/**
+ * @brief Retrieves the highest degree of the polynomial.
+ *
+ * @return The degree of the first term (highest degree) if the list is not empty; otherwise, `0`.
+ */
 int List::getDegree() const
 {
     if (isEmpty())
@@ -174,6 +267,16 @@ int List::getDegree() const
     return head->degree;
 }
 
+/**
+ * @brief Evaluates the polynomial for a given value of x.
+ *
+ * @param x The value at which to evaluate the polynomial.
+ *
+ * Calculates the result by summing each term's coefficient multiplied by x raised to the term's degree.
+ * Outputs the evaluation process and result to the console.
+ *
+ * @note If the list is empty, the result is `0`.
+ */
 void List::evaluate(float x)
 {
     if (isEmpty())
@@ -197,7 +300,14 @@ void List::evaluate(float x)
     std::cout << " = " << result << std::endl;
 }
 
-// Print the polynomial
+/**
+ * @brief Prints the polynomial to the console.
+ *
+ * @param endl If `true`, appends a newline character after printing; otherwise, no newline.
+ *
+ * Utilizes the `toString` method to generate a string representation of the polynomial.
+ * If the list is empty, prints `0`.
+ */
 void List::showALL(bool endl) const
 {
     if (isEmpty())
@@ -214,6 +324,15 @@ void List::showALL(bool endl) const
     }
 }
 
+/**
+ * @brief Generates a string representation of the polynomial.
+ *
+ * @param x Optional parameter used for formatting when evaluating the polynomial. Defaults to NaN.
+ * @return A string representing the polynomial.
+ *
+ * Constructs the polynomial string by iterating through the list and formatting each term.
+ * Handles positive and negative coefficients, as well as degrees for superscript representation.
+ */
 std::string List::toString(float x) const
 {
     if (!head)
@@ -257,6 +376,15 @@ std::string List::toString(float x) const
     return result;
 }
 
+/**
+ * @brief Formats a floating-point number to a string with appropriate precision.
+ *
+ * @param number The number to format.
+ * @return A string representation of the number with up to two decimal places if necessary.
+ *
+ * If the number is an integer, it is converted without decimal places.
+ * Otherwise, it is formatted with two decimal places.
+ */
 std::string List::formatPrecision(float number) const
 {
     std::stringstream stream;
@@ -273,7 +401,15 @@ std::string List::formatPrecision(float number) const
     return std::to_string(number);
 }
 
-// Function to convert a number to its superscript string
+/**
+ * @brief Converts an integer to its superscript string representation.
+ *
+ * @param number The integer to convert.
+ * @return A string containing the superscript characters of the number.
+ *
+ * Maps each digit to its corresponding Unicode superscript character.
+ * Example: 12 becomes "¹²".
+ */
 std::string List::toSuperscript(int number) const
 {
     std::map<char, std::string> superscripts = {
@@ -301,7 +437,16 @@ std::string List::toSuperscript(int number) const
     return result;
 }
 
-// Change the coefficient and degree of a node with a specific degree
+/**
+ * @brief Changes the coefficient and degree of a node with a specific current degree.
+ *
+ * @param currentDegree The current degree of the term to change.
+ * @param coefficient The new coefficient to set.
+ * @param degree The new degree to set.
+ *
+ * If a node with `currentDegree` exists, its coefficient is updated. If the new coefficient is zero,
+ * the node is removed. If the node does not exist, a new term is inserted.
+ */
 void List::changeNode(int currentDegree, float coefficient, int degree)
 {
     Node *node = search(currentDegree);
@@ -320,6 +465,14 @@ void List::changeNode(int currentDegree, float coefficient, int degree)
     }
 }
 
+/**
+ * @brief Overloads the addition operator to add two polynomials.
+ *
+ * @param other The List object to add to the current polynomial.
+ * @return A new List object representing the sum of the two polynomials.
+ *
+ * Creates a copy of the current polynomial, inserts all terms from `other`, and returns the result.
+ */
 List List::operator+(const List &other) const
 {
     List result(*this); // Start with a copy of the current polynomial
@@ -334,6 +487,14 @@ List List::operator+(const List &other) const
     return result;
 }
 
+/**
+ * @brief Overloads the subtraction operator to subtract one polynomial from another.
+ *
+ * @param other The List object to subtract from the current polynomial.
+ * @return A new List object representing the difference between the two polynomials.
+ *
+ * Creates a copy of the current polynomial, inserts all negated terms from `other`, and returns the result.
+ */
 List List::operator-(const List &other) const
 {
     List result(*this); // Start with a copy of the current polynomial
@@ -348,6 +509,15 @@ List List::operator-(const List &other) const
     return result;
 }
 
+/**
+ * @brief Overloads the multiplication operator to multiply two polynomials.
+ *
+ * @param other The List object to multiply with the current polynomial.
+ * @return A new List object representing the product of the two polynomials.
+ *
+ * Performs a nested iteration over both polynomials, multiplying each term from the current polynomial
+ * with each term from `other`, and inserts the resulting terms into the result polynomial.
+ */
 List List::operator*(const List &other) const
 {
     List result;
@@ -369,6 +539,15 @@ List List::operator*(const List &other) const
     return result;
 }
 
+/**
+ * @brief Overloads the insertion operator to allow easy printing of the polynomial.
+ *
+ * @param os The output stream.
+ * @param list The List object representing the polynomial to print.
+ * @return Reference to the output stream with the polynomial appended.
+ *
+ * Utilizes the `toString` method to convert the polynomial to a string and inserts it into the stream.
+ */
 std::ostream &operator<<(std::ostream &os, const List &list)
 {
     if (list.isEmpty())
@@ -382,7 +561,11 @@ std::ostream &operator<<(std::ostream &os, const List &list)
     return os;
 }
 
-// Helper method to delete all nodes
+/**
+ * @brief Helper method to delete all nodes in the list.
+ *
+ * Iterates through the list, deletes each node, and resets the head, tail, and list size.
+ */
 void List::clear()
 {
     Node *current = head;
@@ -396,7 +579,13 @@ void List::clear()
     listSize = 0;
 }
 
-// Helper method to deep copy nodes
+/**
+ * @brief Helper method to perform a deep copy of another List.
+ *
+ * @param other The List object to copy from.
+ *
+ * Copies all nodes from the `other` list into the current list, maintaining the order of terms.
+ */
 void List::copyFrom(const List &other)
 {
     if (other.isEmpty())
