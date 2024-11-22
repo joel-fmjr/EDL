@@ -399,7 +399,7 @@ void List::clear()
 // Helper method to deep copy nodes
 void List::copyFrom(const List &other)
 {
-    if (other.head == nullptr)
+    if (other.isEmpty())
     {
         head = tail = nullptr;
         listSize = 0;
