@@ -1,4 +1,3 @@
-// FileProcessor.h
 #ifndef FILEPROCESSOR_H
 #define FILEPROCESSOR_H
 

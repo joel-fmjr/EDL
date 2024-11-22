@@ -1,6 +1,4 @@
-// List.cpp
-
-#include "List.h"
+#include "../include/List.h"
 #include <iostream>
 #include <string>
 #include <cmath>

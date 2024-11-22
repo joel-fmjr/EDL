@@ -1,4 +1,4 @@
-#include "Node.h"
+#include "../include/Node.h"
 
 // Constructor
 Node::Node(float coeff, int deg)
