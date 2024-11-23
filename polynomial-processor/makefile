@@ -9,7 +9,7 @@ INCLUDE_DIR = include
 SRC_DIR = src
 
 # Targets
-TARGET = polynomial_test
+TARGET = main
 
 # Sources
 SOURCES = \
