@@ -1,13 +1,12 @@
 #include <iostream>
 #include <chrono>
-#include <unordered_map>
-#include <vector>
 
 using namespace std;
 
 const int TAMANHO = 1000000;
+unsigned sequencias[TAMANHO] = {};
 
-int numSequencia(int n, unordered_map<int, int> &sequencias)
+int numDePassos(int n)
 {
     int sequencia = 0;
     unsigned aux = n;
@@ -46,11 +45,10 @@ int main()
     auto start = chrono::steady_clock::now();
     int maiorSequencia = 0;
     unsigned maiorN = 0;
-    unordered_map<int, int> sequencias;
 
-    for (size_t i = 1; i < TAMANHO; i++)
+    for (int i = 1; i < TAMANHO; i++)
     {
-        int sequencia = numSequencia(i, sequencias);
+        int sequencia = numDePassos(i);
 
         if (sequencia > maiorSequencia)
         {
@@ -59,7 +57,7 @@ int main()
         }
     }
 
-    cout << "O número com maior sequência é " << maiorN << " com uma sequência de " << maiorSequencia << " números." << endl;
+    cout << maiorN << " - " << maiorSequencia << endl;
     auto end = chrono::steady_clock::now();
     auto diff = end - start;
     cout << chrono::duration<double, milli>(diff).count() << " ms" << endl;
